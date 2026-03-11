@@ -11,22 +11,23 @@ AUTH_SERVER = "https://tabbo-auth.vercel.app/api/auth"
 LOOKUP_API = "https://tabbo-proxy.vercel.app/api/search?mobile="
 
 USERS_FILE = "users.json"
+HISTORY_FILE = "history.json"
 
 
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
 
-def load_users():
+def load_json(file):
     try:
-        with open(USERS_FILE) as f:
+        with open(file) as f:
             return json.load(f)
     except:
-        return {}
+        return []
 
 
-def save_users(data):
-    with open(USERS_FILE,"w") as f:
+def save_json(file,data):
+    with open(file,"w") as f:
         json.dump(data,f,indent=2)
 
 
@@ -35,6 +36,7 @@ def banner(user,credits):
     clear()
 
     print(Fore.RED + """
+
 ╔══════════════════════════════════════════════════════╗
 ║                                                      ║
 ║        ████████╗ █████╗ ██████╗ ██████╗  ██████╗      ║
@@ -49,14 +51,14 @@ def banner(user,credits):
 ╚══════════════════════════════════════════════════════╝
 """)
 
-    print(Fore.CYAN + "╔══════════════ USER INFO ══════════════╗")
+    print(Fore.YELLOW + "⭐ CREDIT BY TABBO\n")
 
-    print(Fore.YELLOW + f"   👤 User Name : {user}")
-    print(Fore.YELLOW + f"   💳 Credits   : {credits}")
+    print(Fore.CYAN + "╔════════════ USER INFO ════════════╗")
+    print(Fore.GREEN + f"   👤 USER     : {user}")
+    print(Fore.GREEN + f"   💳 CREDITS  : {credits}")
+    print(Fore.CYAN + "╚═══════════════════════════════════╝\n")
 
-    print(Fore.CYAN + "╚═══════════════════════════════════════╝\n")
-
-    print(Fore.GREEN + "⭐ Credit By TABBO\n")
+    print(Fore.YELLOW + "══════ MENU ══════\n")
 
 
 def login():
@@ -64,93 +66,80 @@ def login():
     clear()
 
     print(Fore.CYAN + """
-╔════════════════════════════════════╗
-            🔐 TOOL LOGIN
-╚════════════════════════════════════╝
+╔════════════════════════════════╗
+            🔐 LOGIN
+╚════════════════════════════════╝
 
-📩 Generate password contact admin
 Telegram : @tabbo73
 """)
 
-    password = getpass.getpass("🔑 Enter Password : ")
+    password = getpass.getpass("Password : ")
 
     try:
 
         r = requests.get(AUTH_SERVER, params={"pass": password}).json()
 
         if r.get("status") != "ok":
-
-            print("❌ Invalid password")
             exit()
 
     except:
-
         exit()
 
 
 def show_results(data, number):
 
     print(Fore.MAGENTA + f"""
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📱 RESULTS FOR : {number}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📱 RESULT FOR : {number}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
 
-    if not isinstance(data, dict):
+    if not isinstance(data, dict) or len(data) == 0:
+
+        print(Fore.RED + "\n❌ DATA NOT FOUND\n")
         return
 
-    for i, key in enumerate(data,1):
+    for i,key in enumerate(data,1):
 
         r = data[key]
 
-        print(Fore.CYAN + "╔══════════════════════════════╗")
-        print(Fore.CYAN + f"         RECORD {i}")
-        print(Fore.CYAN + "╚══════════════════════════════╝")
+        print(Fore.BLUE + "╔══════════════════════════════╗")
+        print(Fore.BLUE + f"         RECORD {i}")
+        print(Fore.BLUE + "╚══════════════════════════════╝")
 
-        if r.get("name") or r.get("fname"):
+        if r.get("name"):
+            print(Fore.YELLOW + "👤 Name :",r["name"])
 
-            print(Fore.YELLOW + "\n👤 PERSONAL INFORMATION")
-
-            if r.get("name"):
-                print("   Name   :", r["name"])
-
-            if r.get("fname"):
-                print("   Father :", r["fname"])
+        if r.get("fname"):
+            print(Fore.YELLOW + "👨 Father :",r["fname"])
 
         if r.get("address"):
+            print(Fore.GREEN + "🏠 Address :",r["address"])
 
-            print(Fore.YELLOW + "\n🏠 ADDRESS DETAILS")
-            print("   Location :", r["address"])
+        if r.get("circle"):
+            print(Fore.CYAN + "📡 Circle :",r["circle"])
 
-        if r.get("circle") or r.get("id"):
-
-            print(Fore.YELLOW + "\n📡 NETWORK INFO")
-
-            if r.get("circle"):
-                print("   Circle :", r["circle"])
-
-            if r.get("id"):
-                print("   ID :", r["id"])
+        if r.get("id"):
+            print(Fore.MAGENTA + "🆔 ID :",r["id"])
 
         print(Fore.RED + """
-────────────────────────────────────
+──────────────────────────────
 📩 Telegram : @tabbo73
-🛑 Credit By TABBO
-────────────────────────────────────
+⭐ Credit By TABBO
+──────────────────────────────
 """)
 
 
 def search(user,users):
 
     if users[user] <= 0:
-
         print("❌ No credits left")
         input()
         return
 
     number = input("📱 Enter Mobile Number : ")
 
-    print("\n🔎 Searching...\n")
+    print("🔎 Searching...\n")
 
     time.sleep(1)
 
@@ -162,13 +151,73 @@ def search(user,users):
 
         show_results(data, number)
 
+        history = load_json(HISTORY_FILE)
+
+        history.append(number)
+
+        save_json(HISTORY_FILE,history)
+
     except:
         pass
 
     users[user] -= 1
-    save_users(users)
+
+    save_json(USERS_FILE,users)
 
     input("Press Enter...")
+
+
+def history():
+
+    data = load_json(HISTORY_FILE)
+
+    print(Fore.CYAN + "\n📜 SEARCH HISTORY\n")
+
+    if len(data) == 0:
+        print("No history")
+
+    for i,n in enumerate(data,1):
+        print(f"{i}. {n}")
+
+    input("\nEnter...")
+
+
+def clear_history():
+
+    save_json(HISTORY_FILE,[])
+
+    print("History cleared")
+
+    input()
+
+
+def guide():
+
+    print(Fore.GREEN + """
+
+📖 GUIDE
+
+1 Enter mobile number
+2 Tool shows database info
+3 Each search costs 1 credit
+
+""")
+
+    input()
+
+
+def about():
+
+    print(Fore.YELLOW + """
+
+TABBO NUMBER INFO TOOL
+
+Developer : TABBO
+Telegram  : @tabbo73
+
+""")
+
+    input()
 
 
 def menu(user,users):
@@ -177,29 +226,43 @@ def menu(user,users):
 
         banner(user,users[user])
 
-        print("""
-1️⃣  Single Lookup
-2️⃣  Exit
-""")
+        print(Fore.GREEN + "1️⃣  Search Number")
+        print(Fore.CYAN + "2️⃣  History")
+        print(Fore.MAGENTA + "3️⃣  Clear History")
+        print(Fore.BLUE + "4️⃣  Guide")
+        print(Fore.YELLOW + "5️⃣  About")
+        print(Fore.RED + "6️⃣  Exit\n")
 
-        op = input("Select : ")
+        op = input("Select Option : ")
 
         if op == "1":
             search(user,users)
 
         elif op == "2":
+            history()
+
+        elif op == "3":
+            clear_history()
+
+        elif op == "4":
+            guide()
+
+        elif op == "5":
+            about()
+
+        elif op == "6":
             exit()
 
 
 login()
 
-users = load_users()
+users = load_json(USERS_FILE)
 
 username = os.getlogin()
 
 if username not in users:
     users[username] = 5
 
-save_users(users)
+save_json(USERS_FILE,users)
 
 menu(username,users)
