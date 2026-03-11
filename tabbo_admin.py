@@ -1,10 +1,17 @@
 import json
-import sys
+import os
+from colorama import Fore, init
+
+init(autoreset=True)
 
 USERS_FILE = "users.json"
 
 ADMIN_ID = "admin"
-ADMIN_PASS = "tabboadmin"
+ADMIN_PASS = "tabbo123"
+
+
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 def load_users():
@@ -20,67 +27,118 @@ def save_users(data):
         json.dump(data,f,indent=2)
 
 
-print("""
+def banner():
 
-█████ ADMIN PANEL █████
+    clear()
 
+    print(Fore.RED + """
+╔══════════════════════════════════════════════════════╗
+║                                                      ║
+║        ████████╗ █████╗ ██████╗ ██████╗  ██████╗      ║
+║        ╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗██╔═══██╗     ║
+║           ██║   ███████║██████╔╝██████╔╝██║   ██║     ║
+║           ██║   ██╔══██║██╔══██╗██╔══██╗██║   ██║     ║
+║           ██║   ██║  ██║██████╔╝██████╔╝╚██████╔╝     ║
+║           ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚═════╝  ╚═════╝      ║
+║                                                      ║
+║                 👑 ADMIN CONTROL PANEL               ║
+║                                                      ║
+╚══════════════════════════════════════════════════════╝
 """)
 
-admin_id = input("Admin ID : ")
-admin_pass = input("Password : ")
 
-if admin_id != ADMIN_ID or admin_pass != ADMIN_PASS:
+def login():
 
-    print("❌ Invalid admin login")
-    sys.exit()
+    banner()
 
-
-while True:
-
-    print("""
-
-1 Total Users
-2 User Info
-3 Give Credits
-4 Exit
-
+    print(Fore.YELLOW + """
+🔐 ADMIN LOGIN
 """)
 
-    op = input("Select : ")
+    admin = input("Admin ID : ")
+    password = input("Password : ")
+
+    if admin != ADMIN_ID or password != ADMIN_PASS:
+
+        print("❌ Invalid admin login")
+        exit()
+
+
+def show_users():
 
     users = load_users()
 
-    if op == "1":
+    print(Fore.CYAN + "\n📊 USERS LIST\n")
 
-        print("\n👥 Total Users :",len(users))
+    for u in users:
 
-
-    elif op == "2":
-
-        for u in users:
-
-            print("\n👤 User :",u)
-            print("🌐 IP :",users[u]["ip"])
-            print("💳 Credits :",users[u]["credits"])
-            print("📊 Used :",users[u]["used"])
+        print(Fore.GREEN + f"""
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👤 User : {u}
+💳 Credits : {users[u]}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+""")
 
 
-    elif op == "3":
+def give_credits():
 
-        u = input("Username : ")
+    users = load_users()
 
-        if u not in users:
-            print("User not found")
-            continue
+    user = input("Enter Username : ")
 
-        c = int(input("Credits to add : "))
+    if user not in users:
 
-        users[u]["credits"] += c
+        print("User not found")
+        return
 
-        save_users(users)
+    credit = int(input("Credits to add : "))
 
-        print("✅ Credits added")
+    users[user] += credit
+
+    save_users(users)
+
+    print("✅ Credits added")
 
 
-    elif op == "4":
-        sys.exit()
+def total_users():
+
+    users = load_users()
+
+    print(Fore.YELLOW + f"\n👥 Total Users : {len(users)}\n")
+
+
+def menu():
+
+    while True:
+
+        banner()
+
+        print(Fore.GREEN + """
+
+1️⃣  Total Users
+2️⃣  Show Users
+3️⃣  Give Credits
+4️⃣  Exit
+
+""")
+
+        op = input("Select : ")
+
+        if op == "1":
+            total_users()
+            input()
+
+        elif op == "2":
+            show_users()
+            input()
+
+        elif op == "3":
+            give_credits()
+            input()
+
+        elif op == "4":
+            exit()
+
+
+login()
+menu()
