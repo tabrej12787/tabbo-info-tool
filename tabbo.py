@@ -31,6 +31,7 @@ def save_json(file, data):
 
 
 def banner(user, credits):
+
     clear()
 
     print(Fore.RED + """
@@ -60,6 +61,7 @@ def banner(user, credits):
 
 
 def login():
+
     clear()
 
     print(Fore.CYAN + """
@@ -70,35 +72,22 @@ def login():
 Telegram : @tabbo73
 """)
 
-    password = input("Password : ")
+    print(Fore.YELLOW + "Password : ", end="")
+    password = input()
 
     try:
+
         r = requests.get(AUTH_SERVER, params={"pass": password}).json()
 
         if r.get("status") != "ok":
-            print("❌ Invalid Password")
+
+            print(Fore.RED + "❌ Invalid Password")
             exit()
 
     except:
-        print("Server Error")
+
+        print(Fore.RED + "Server Error")
         exit()
-
-
-def format_address(address):
-    parts = address.split("!")
-
-    labels = [
-        "Relation",
-        "Village",
-        "City",
-        "District",
-        "State",
-        "Pincode"
-    ]
-
-    for i, part in enumerate(parts):
-        if i < len(labels):
-            print(Fore.GREEN + f"{labels[i]} : " + Fore.YELLOW + part)
 
 
 def show_results(data, number):
@@ -110,6 +99,7 @@ def show_results(data, number):
 """)
 
     if not isinstance(data, dict) or len(data) == 0:
+
         print(Fore.RED + "\n❌ DATA NOT FOUND\n")
         return
 
@@ -122,20 +112,46 @@ def show_results(data, number):
         print(Fore.BLUE + "╚══════════════════════════════╝")
 
         if r.get("name"):
-            print(Fore.YELLOW + "👤 Name : " + Fore.GREEN + r["name"])
+            print(Fore.YELLOW + "👤 Name : " + Fore.CYAN + r["name"])
 
         if r.get("fname"):
-            print(Fore.YELLOW + "👨 Father : " + Fore.GREEN + r["fname"])
+            print(Fore.YELLOW + "👨 Father : " + Fore.CYAN + r["fname"])
 
         if r.get("address"):
-            print(Fore.CYAN + "\n🏠 ADDRESS DETAILS")
-            format_address(r["address"])
+
+            print(Fore.GREEN + "\n🏠 ADDRESS DETAILS")
+
+            addr = r["address"].split("!")
+
+            labels = [
+                "Relation",
+                "Village",
+                "City",
+                "District",
+                "State",
+                "Pincode"
+            ]
+
+            for i, part in enumerate(addr):
+
+                part = part.strip()
+
+                if part and i < len(labels):
+
+                    print(
+                        Fore.YELLOW + "   " + labels[i] +
+                        Fore.MAGENTA + " : " +
+                        Fore.CYAN + part
+                    )
 
         if r.get("circle"):
-            print(Fore.MAGENTA + "\n📡 Circle : " + Fore.GREEN + r["circle"])
+            print(Fore.GREEN + "\n📡 Circle : " + Fore.CYAN + r["circle"])
+
+        if r.get("alt"):
+            print(Fore.YELLOW + "📞 Alternate : " + Fore.CYAN + r["alt"])
 
         if r.get("id"):
-            print(Fore.BLUE + "🆔 ID : " + Fore.GREEN + r["id"])
+            print(Fore.MAGENTA + "🆔 ID : " + Fore.CYAN + r["id"])
 
         print(Fore.RED + """
 ────────────────────────────────────
@@ -185,10 +201,12 @@ Telegram : @tabbo73
     save_json(USERS_FILE, users)
 
     print(Fore.YELLOW + f"\n💳 Remaining Credits : {users[user]}")
+
     input("Press Enter...")
 
 
 def history():
+
     data = load_json(HISTORY_FILE)
 
     print(Fore.CYAN + "\n📜 SEARCH HISTORY\n")
@@ -203,12 +221,16 @@ def history():
 
 
 def clear_history():
+
     save_json(HISTORY_FILE, [])
+
     print("History cleared")
+
     input()
 
 
 def guide():
+
     print(Fore.GREEN + """
 
 📖 GUIDE
@@ -218,10 +240,12 @@ def guide():
 3 Each search costs 1 credit
 
 """)
+
     input()
 
 
 def about():
+
     print(Fore.YELLOW + """
 
 TABBO NUMBER INFO TOOL
@@ -230,6 +254,7 @@ Developer : TABBO
 Telegram  : @tabbo73
 
 """)
+
     input()
 
 
