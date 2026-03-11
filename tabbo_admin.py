@@ -15,6 +15,7 @@ def clear():
 
 
 def load_users():
+
     try:
         with open(USERS_FILE) as f:
             return json.load(f)
@@ -23,6 +24,7 @@ def load_users():
 
 
 def save_users(data):
+
     with open(USERS_FILE,"w") as f:
         json.dump(data,f,indent=2)
 
@@ -32,6 +34,7 @@ def banner():
     clear()
 
     print(Fore.RED + """
+
 ╔══════════════════════════════════════════════════════╗
 ║                                                      ║
 ║        ████████╗ █████╗ ██████╗ ██████╗  ██████╗      ║
@@ -51,9 +54,7 @@ def login():
 
     banner()
 
-    print(Fore.YELLOW + """
-🔐 ADMIN LOGIN
-""")
+    print(Fore.YELLOW + "🔐 ADMIN LOGIN\n")
 
     admin = input("Admin ID : ")
     password = input("Password : ")
@@ -64,20 +65,28 @@ def login():
         exit()
 
 
+def total_users():
+
+    users = load_users()
+
+    print(Fore.GREEN + f"\n👥 Total Users : {len(users)}\n")
+
+    input("Press Enter...")
+
+
 def show_users():
 
     users = load_users()
 
-    print(Fore.CYAN + "\n📊 USERS LIST\n")
+    print(Fore.CYAN + "\n📋 USERS LIST\n")
 
     for u in users:
 
-        print(Fore.GREEN + f"""
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-👤 User : {u}
-💳 Credits : {users[u]}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-""")
+        print(Fore.YELLOW + f"User : {u}")
+        print(Fore.GREEN + f"Credits : {users[u]}")
+        print("──────────────")
+
+    input("\nPress Enter...")
 
 
 def give_credits():
@@ -89,6 +98,7 @@ def give_credits():
     if user not in users:
 
         print("User not found")
+        input()
         return
 
     credit = int(input("Credits to add : "))
@@ -97,14 +107,9 @@ def give_credits():
 
     save_users(users)
 
-    print("✅ Credits added")
+    print("✅ Credits Added")
 
-
-def total_users():
-
-    users = load_users()
-
-    print(Fore.YELLOW + f"\n👥 Total Users : {len(users)}\n")
+    input()
 
 
 def menu():
@@ -117,24 +122,21 @@ def menu():
 
 1️⃣  Total Users
 2️⃣  Show Users
-3️⃣  Give Credits
+3️⃣  Add Credits
 4️⃣  Exit
 
 """)
 
-        op = input("Select : ")
+        op = input("Select Option : ")
 
         if op == "1":
             total_users()
-            input()
 
         elif op == "2":
             show_users()
-            input()
 
         elif op == "3":
             give_credits()
-            input()
 
         elif op == "4":
             exit()
