@@ -65,8 +65,8 @@ pip install requests colorama
 
 ### 6️⃣ Create required files
 ```bash
-echo {} > users.json
 echo [] > history.json
+echo {} > limit.json
 ```
 
 ### 7️⃣ Run the tool
