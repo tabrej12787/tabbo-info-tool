@@ -36,69 +36,61 @@ pip install requests colorama
 
 ---
 
-## 🚀 Installation (Termux)
+🚀 Installation (Termux)
 
-### 1️⃣ Update packages
-```bash
+#1️⃣ Update packages
+``
 pkg update -y
-```
-
-### 2️⃣ Install dependencies
-```bash
+``
+#2️⃣ Install dependencies
+``
 pkg install git python -y
-```
-
-### 3️⃣ Clone repository
-```bash
+``
+#3️⃣ Clone repository
+``
 git clone https://github.com/tabrej12787/tabbo-info-tool.git
-```
-
-### 4️⃣ Enter project folder
-```bash
+``
+#4️⃣ Enter project folder
+``
 cd tabbo-info-tool
-```
-
-### 5️⃣ Install Python libraries
-```bash
+``
+#5️⃣ Install Python libraries
+``
 pip install requests colorama
-```
-
-### 6️⃣ Create required files
-```bash
+``
+#6️⃣ Create required files
+``
 echo {} > users.json
 echo [] > history.json
-```
-
-### 7️⃣ Run the tool
-```bash
+``
+#7️⃣ Run the tool
+``
 python tabbo.py
-```
+``
+---
 
 🔐 Authentication
 
 The tool requires password authentication before use.
 
-If you do not have access, contact the administrator:
+If you do not have access, contact the administrator.
 
-Telegram : @tabbo73
-
----
-
-💳 Credit System
-
-Each user receives 5 default credits.
-
-Action| Credits Used
-Mobile Search| 1 Credit
-
-When credits are exhausted the tool will show:
-
-YOUR CREDITS FINISHED
-Contact Admin For More Credits
-Telegram : @tabbo73
+Telegram: @tabbo73
 
 ---
 
+📂 Project Structure
+
+tabbo-info-tool
+│
+├── tabbo.py
+├── users.json
+├── history.json
+└── README.md
+
+---
+
+⭐ Developer: TABBO
 📊 Example Output (Sample Data)
 
 RESULTS FOR : 9000000000
