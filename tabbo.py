@@ -280,7 +280,8 @@ login()
 
 username = os.getlogin()
 
-menu(username)    print(Fore.CYAN + """
+menu(username)
+print(Fore.CYAN + """
 ╔════════════════════════════════╗
             🔐 LOGIN
 ╚════════════════════════════════╝
