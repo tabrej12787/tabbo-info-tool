@@ -128,6 +128,34 @@ Telegram : @tabbo73
         sys.exit()
 
 
+def parse_address(address):
+
+    parts = address.split()
+
+    pincode = ""
+    state = ""
+    district = ""
+    village = ""
+
+    for part in parts:
+
+        if part.isdigit() and len(part) == 6:
+            pincode = part
+
+        elif part.lower() in ["uttar","pradesh","bihar","delhi","punjab","haryana",
+                              "rajasthan","gujarat","maharashtra","jharkhand","mp"]:
+
+            state += part + " "
+
+        elif part.lower() in ["gorakhpur","lucknow","kanpur","varanasi","allahabad"]:
+            district = part
+
+        else:
+            village += part + " "
+
+    return village.strip(), district, state.strip(), pincode
+
+
 def show_results(data, number):
 
     print(Fore.MAGENTA + f"""
@@ -155,21 +183,12 @@ def show_results(data, number):
 
             print(Fore.GREEN + "\n🏠 ADDRESS DETAILS")
 
-            addr=r["address"].split(" ")
+            village,district,state,pincode = parse_address(r["address"])
 
-            labels=["Village","City","District","State","Pincode"]
-
-            for i,part in enumerate(addr[:5]):
-
-                part=part.strip()
-
-                if part and i<len(labels):
-
-                    print(
-                        Fore.YELLOW+"   "+labels[i]+
-                        Fore.MAGENTA+" : "+
-                        Fore.CYAN+part
-                    )
+            print(Fore.YELLOW + "   Village : " + Fore.CYAN + village)
+            print(Fore.YELLOW + "   District : " + Fore.CYAN + district)
+            print(Fore.YELLOW + "   State : " + Fore.CYAN + state)
+            print(Fore.YELLOW + "   Pincode : " + Fore.CYAN + pincode)
 
         print(Fore.GREEN + "\n📡 Circle : " + Fore.CYAN + str(r.get("circle","")))
         print(Fore.YELLOW + "📞 Alternate : " + Fore.CYAN + str(r.get("alt_mobile","")))
@@ -204,9 +223,7 @@ def search(user):
 
         url = hidden_api() + number + "&k=" + key
 
-        headers = {
-            "User-Agent": "Mozilla/5.0"
-        }
+        headers = {"User-Agent": "Mozilla/5.0"}
 
         r = requests.get(url, headers=headers, timeout=10)
 
