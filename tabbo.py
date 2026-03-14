@@ -37,7 +37,6 @@ def banner(user, remaining):
    ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚═════╝  ╚═════╝
 
         🔎 TABBO NUMBER INFO TOOL 🔎
-
 """)
 
     print(Fore.CYAN + "┌─────────────────────────────┐")
@@ -94,14 +93,15 @@ Telegram : @tabbo73
     password = input("Password : ")
 
     try:
+
         r = requests.get(AUTH_SERVER, params={"pass": password}).json()
 
         if r.get("status") != "ok":
             print(Fore.RED + "❌ Invalid Password")
             sys.exit()
 
-    except:
-        print(Fore.RED + "Server Error")
+    except Exception as e:
+        print("Login Error:", e)
         sys.exit()
 
 
@@ -132,6 +132,7 @@ def show_results(data, number):
             print(Fore.YELLOW + "👨 Father : " + Fore.CYAN + r["fname"])
 
         if r.get("address"):
+
             print(Fore.GREEN + "\n🏠 ADDRESS DETAILS")
 
             addr = r["address"].split("!")
@@ -184,7 +185,7 @@ def search(user):
         input("Press Enter...")
         return
 
-    number = input("📱 Enter Mobile Number : ")
+    number = input("📱 Enter Mobile Number : ").strip()
 
     print("🔎 Searching...\n")
     time.sleep(1)
@@ -196,7 +197,8 @@ def search(user):
 
         url = hidden_api() + number + "&k=" + key
 
-        r = requests.get(url)
+        r = requests.get(url, timeout=10)
+
         result = r.json()
 
         show_results(result, number)
@@ -205,8 +207,9 @@ def search(user):
         history.append(number)
         save_json(HISTORY_FILE, history)
 
-    except:
-        pass
+    except Exception as e:
+
+        print("API Error:", e)
 
     data[user]["count"] += 1
     save_json(LIMIT_FILE, data)
@@ -236,7 +239,9 @@ def history():
 def clear_history():
 
     save_json(HISTORY_FILE, [])
+
     print("History cleared")
+
     input()
 
 
@@ -245,6 +250,7 @@ def menu(user):
     while True:
 
         data = check_limit(user)
+
         remaining = DAILY_LIMIT - data[user]["count"]
 
         banner(user, remaining)
@@ -269,8 +275,6 @@ def menu(user):
             sys.exit()
 
 
-# hidden proxy api
-
 def hidden_api():
 
     p1="aHR0cHM6Ly90YW"
@@ -279,7 +283,9 @@ def hidden_api():
     p4="FwaS9zZWFyY2g/"
     p5="bW9iaWxlPQ=="
 
-    return base64.b64decode(p1+p2+p3+p4+p5).decode()
+    url = p1+p2+p3+p4+p5
+
+    return base64.b64decode(url).decode().strip()
 
 
 login()
