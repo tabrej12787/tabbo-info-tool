@@ -128,32 +128,40 @@ Telegram : @tabbo73
         sys.exit()
 
 
+# 🧠 Address parser
 def parse_address(address):
 
     parts = address.split()
 
-    pincode = ""
-    state = ""
-    district = ""
+    relation = ""
     village = ""
+    city = ""
+    district = ""
+    state = ""
+    pincode = ""
 
-    for part in parts:
+    # relation detect
+    if "S/O" in parts:
+        i = parts.index("S/O")
+        relation = " ".join(parts[i:i+3])
+        parts = parts[i+3:]
 
-        if part.isdigit() and len(part) == 6:
-            pincode = part
+    if len(parts) >= 1:
+        pincode = parts[-1]
 
-        elif part.lower() in ["uttar","pradesh","bihar","delhi","punjab","haryana",
-                              "rajasthan","gujarat","maharashtra","jharkhand","mp"]:
+    if len(parts) >= 3:
+        state = parts[-3] + " " + parts[-2]
 
-            state += part + " "
+    if len(parts) >= 4:
+        district = parts[-4]
 
-        elif part.lower() in ["gorakhpur","lucknow","kanpur","varanasi","allahabad"]:
-            district = part
+    if len(parts) >= 5:
+        city = parts[-5]
 
-        else:
-            village += part + " "
+    if len(parts) > 5:
+        village = " ".join(parts[:-5])
 
-    return village.strip(), district, state.strip(), pincode
+    return relation, village, city, district, state, pincode
 
 
 def show_results(data, number):
@@ -183,9 +191,11 @@ def show_results(data, number):
 
             print(Fore.GREEN + "\n🏠 ADDRESS DETAILS")
 
-            village,district,state,pincode = parse_address(r["address"])
+            relation,village,city,district,state,pincode = parse_address(r["address"])
 
+            print(Fore.YELLOW + "   Relation : " + Fore.CYAN + relation)
             print(Fore.YELLOW + "   Village : " + Fore.CYAN + village)
+            print(Fore.YELLOW + "   City : " + Fore.CYAN + city)
             print(Fore.YELLOW + "   District : " + Fore.CYAN + district)
             print(Fore.YELLOW + "   State : " + Fore.CYAN + state)
             print(Fore.YELLOW + "   Pincode : " + Fore.CYAN + pincode)
