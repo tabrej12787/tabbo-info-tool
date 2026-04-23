@@ -128,7 +128,7 @@ Telegram : @tabbo73
         sys.exit()
 
 
-# 🧠 Address parser
+# 🧠 OLD address parser (kept for compatibility, not used)
 def parse_address(address):
 
     parts = address.split()
@@ -164,6 +164,32 @@ def parse_address(address):
     return relation, village, city, district, state, pincode
 
 
+# 🧠 NEW address parser for ! separated format (FIX)
+def parse_address_new(address):
+    parts = address.split('!')
+    relation = ""
+    village = ""
+    city = ""
+    district = ""
+    state = ""
+    pincode = ""
+
+    if len(parts) >= 1:
+        relation = parts[0] if ("S/O" in parts[0] or "D/O" in parts[0]) else ""
+    if len(parts) >= 4:
+        village = parts[3] if parts[3] != "." else ""
+    if len(parts) >= 6:
+        district = parts[5]
+    if len(parts) >= 7:
+        state = parts[6]
+    if len(parts) >= 8:
+        pincode = parts[7]
+    if not pincode and len(parts) > 1:
+        pincode = parts[-1]
+
+    return relation, village, city, district, state, pincode
+
+
 def show_results(data, number):
 
     print(Fore.MAGENTA + f"""
@@ -172,11 +198,13 @@ def show_results(data, number):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
 
-    if not data.get("success"):
+    # FIX: new API uses "count" instead of "success"
+    if data.get("count", 0) == 0:
         print(Fore.RED + "❌ DATA NOT FOUND\n")
         return
 
-    records = data.get("result", [])
+    # FIX: new API uses "results" instead of "result"
+    records = data.get("results", [])
 
     for i, r in enumerate(records,1):
 
@@ -184,14 +212,16 @@ def show_results(data, number):
         print(Fore.BLUE + f"        RECORD {i}")
         print(Fore.BLUE + "╚══════════════════════════╝")
 
+        # FIX: field names changed
         print(Fore.YELLOW + "👤 Name : " + Fore.CYAN + str(r.get("name","")))
-        print(Fore.YELLOW + "👨 Father : " + Fore.CYAN + str(r.get("father_name","")))
+        print(Fore.YELLOW + "👨 Father : " + Fore.CYAN + str(r.get("fname","")))
 
         if r.get("address"):
 
             print(Fore.GREEN + "\n🏠 ADDRESS DETAILS")
 
-            relation,village,city,district,state,pincode = parse_address(r["address"])
+            # FIX: use new parser for ! separated address
+            relation,village,city,district,state,pincode = parse_address_new(r["address"])
 
             print(Fore.YELLOW + "   Relation : " + Fore.CYAN + relation)
             print(Fore.YELLOW + "   Village : " + Fore.CYAN + village)
@@ -201,8 +231,8 @@ def show_results(data, number):
             print(Fore.YELLOW + "   Pincode : " + Fore.CYAN + pincode)
 
         print(Fore.GREEN + "\n📡 Circle : " + Fore.CYAN + str(r.get("circle","")))
-        print(Fore.YELLOW + "📞 Alternate : " + Fore.CYAN + str(r.get("alt_mobile","")))
-        print(Fore.MAGENTA + "🆔 ID : " + Fore.CYAN + str(r.get("id_number","")))
+        print(Fore.YELLOW + "📞 Alternate : " + Fore.CYAN + str(r.get("alt","")))
+        print(Fore.MAGENTA + "🆔 ID : " + Fore.CYAN + str(r.get("user_id","")))
 
         print(Fore.RED + """
 ────────────────────────────────
